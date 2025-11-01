@@ -38,6 +38,15 @@ r = st.sidebar.number_input(
     format="%.4f"
 )
 
+epsilon = st.sidebar.number_input(
+    "Epsilon (tolerance)",
+    min_value=1e-12,
+    max_value=1e-3,
+    value=1e-10,
+    step=1e-11,
+    format="%.2e"
+)
+
 # Helper function to generate lattice
 def generate_fcc_lattice(size_multiplier, a):
     """Generate FCC lattice"""
@@ -126,6 +135,9 @@ else:
 spheres = []
 for idx, pos in enumerate(positions):
     spheres.append(Sphere(idx, pos, r))
+
+import radical_center_enhanced
+radical_center_enhanced.EPSILON = epsilon
 
 # Calculate k_max
 with st.spinner("Calculating k_max..."):
