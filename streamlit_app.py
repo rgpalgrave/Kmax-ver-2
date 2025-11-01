@@ -137,11 +137,10 @@ for idx, pos in enumerate(positions):
     spheres.append(Sphere(idx, pos, r))
 
 import radical_center_enhanced
-radical_center_enhanced.EPSILON = epsilon
 
 # Calculate k_max
 with st.spinner("Calculating k_max..."):
-    kmax = calculate_kmax(spheres)
+    kmax = radical_center_enhanced.calculate_kmax(spheres, epsilon=epsilon)
 
 # Main display
 col1, col2, col3 = st.columns(3)
