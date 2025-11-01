@@ -20,16 +20,18 @@ def calc_D(sphere):
     """Calculates the D term for the sphere equation: |c|^2 - r^2"""
     return np.dot(sphere.center, sphere.center) - sphere.radius**2
 
-def is_on_surface(sphere, point, epsilon):
+def is_on_surface(sphere, point, epsilon=None):
     """
     Checks if a point lies on the surface of a sphere using an epsilon tolerance.
     This is the core robustness check.
     """
+    if epsilon is None:
+        epsilon = EPSILON
     distance_sq = np.sum((point - sphere.center)**2)
     radius_sq = sphere.radius**2
     return abs(distance_sq - radius_sq) <= epsilon * max(distance_sq, radius_sq, 1.0)
 
-def solve_radical_center(s1, s2, s3):
+def solve_radical_center(s1, s2, s3, epsilon=None):
     """
     Find point(s) where all three spheres intersect.
     
@@ -117,11 +119,14 @@ def solve_radical_center(s1, s2, s3):
     # Return all candidates; calculate_kmax will verify each one
     return candidates if candidates else None
 
-def calculate_kmax(spheres):
+def calculate_kmax(spheres, epsilon=None):
     """
     Calculates the maximum intersection order k_max for a given set of N spheres
     using the O(N^4) Radical Center method.
     """
+    if epsilon is None:
+        epsilon = EPSILON
+    
     N = len(spheres)
     if N < 2:
         return 0
@@ -131,12 +136,12 @@ def calculate_kmax(spheres):
     # 1. Baseline Check: k=2 (Any intersection)
     for s1, s2 in combinations(spheres, 2):
         d_centers = np.linalg.norm(s1.center - s2.center)
-        if d_centers <= s1.radius + s2.radius + EPSILON:
+        if d_centers <= s1.radius + s2.radius + epsilon:
             max_order = max(max_order, 2)
 
     # 2. Triplet Check: k=3 to k=N
     for s1, s2, s3 in combinations(spheres, 3):
-        result = solve_radical_center(s1, s2, s3)
+        result = solve_radical_center(s1, s2, s3, epsilon)
 
         if result is not None:
             # result can be a single point or a list of candidates
@@ -147,9 +152,9 @@ def calculate_kmax(spheres):
                     continue
                 
                 # Check if x_star is on all three defining spheres
-                if (is_on_surface(s1, x_star, EPSILON) and
-                    is_on_surface(s2, x_star, EPSILON) and
-                    is_on_surface(s3, x_star, EPSILON)):
+                if (is_on_surface(s1, x_star, epsilon) and
+                    is_on_surface(s2, x_star, epsilon) and
+                    is_on_surface(s3, x_star, epsilon)):
 
                     k_current = 3
                     
@@ -157,7 +162,7 @@ def calculate_kmax(spheres):
                     for s_check in spheres:
                         if s_check.id in [s1.id, s2.id, s3.id]:
                             continue
-                        if is_on_surface(s_check, x_star, EPSILON):
+                        if is_on_surface(s_check, x_star, epsilon):
                             k_current += 1
 
                     max_order = max(max_order, k_current)
