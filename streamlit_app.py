@@ -34,7 +34,8 @@ r = st.sidebar.number_input(
     min_value=0.1,
     max_value=10.0,
     value=0.5,
-    step=0.1
+    step=0.0001,
+    format="%.4f"
 )
 
 # Helper function to generate lattice
