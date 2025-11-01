@@ -29,10 +29,10 @@ a = st.sidebar.slider(
     step=0.1
 )
 
-r = st.sidebar.slider(
+r = st.sidebar.number_input(
     "Sphere Radius (r) in Ångströms",
     min_value=0.1,
-    max_value=5.0,
+    max_value=10.0,
     value=0.5,
     step=0.1
 )
